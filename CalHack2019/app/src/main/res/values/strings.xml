@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CalHacks2019</string>
+    <string name="mapbox_access_token" translatable="false">sk.eyJ1IjoiY29saW5hY2hlbiIsImEiOiJjazI3OWlxZTUwMG14M2NueW4wa2VtZzJtIn0.zeGUHYUwL5E2Kxaf32gahQ</string>
 </resources>
