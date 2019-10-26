@@ -22,7 +22,7 @@ import com.mapbox.vision.safety.core.models.RoadRestrictions;
 import android.support.annotation.NonNull;
 
 
-class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private Float maxAllowedSpeed = -1f;
 
@@ -94,11 +94,13 @@ class MainActivity extends AppCompatActivity {
         super.onStart();
 
         VisionManager.create();
-        VisionManager.start();
+        //VisionManager.start();
         //VisionManager.start(visionEventsListener);
+        VisionManager.setVisionEventsListener(visionEventsListener);
+        VisionManager.start();
 
-        //VisionSafetyManager.create(VisionManager.INSTANCE, visionSafetyListener);
-        VisionSafetyManager.create();
+        VisionSafetyManager.create(VisionManager.INSTANCE);
+        VisionSafetyManager.setVisionSafetyListener(visionSafetyListener);
     }
 
     @Override
@@ -112,120 +114,3 @@ class MainActivity extends AppCompatActivity {
     }
 }
 
-/*
-public class MainActivity extends AppCompatActivity {
-
-    private VisionEventsListener visionEventsListener  = new VisionEventsListener() {
-        @Override
-        public void onAuthorizationStatusUpdated(@NonNull AuthorizationStatus authorizationStatus) {
-
-        }
-
-        @Override
-        public void onFrameSegmentationUpdated(FrameSegmentation frameSegmentation) {
-
-        }
-
-        @Override
-        public void onFrameDetectionsUpdated(FrameDetections frameDetections) {
-
-        }
-
-        @Override
-        public void onFrameSignClassificationsUpdated(FrameSignClassifications frameSignClassifications) {
-
-        }
-
-        @Override
-        public void onRoadDescriptionUpdated(RoadDescription roadDescription) {
-
-        }
-
-        @Override
-        public void onWorldDescriptionUpdated(WorldDescription worldDescription) {
-
-        }
-
-        @Override
-        public void onVehicleStateUpdated(VehicleState vehicleState) {
-
-        }
-
-        @Override
-        public void onCameraUpdated(Camera camera) {
-
-        }
-
-        @Override
-        public void onCountryUpdated(Country country) {
-
-        }
-
-        @Override
-        public void onUpdateCompleted() {
-
-        }
-    };
-
-    private VisionSafetyListener visionSafetyListener = new VisionSafetyListener() {
-        @Override
-        public void onCollisionsUpdated(@NonNull CollisionObject[] collisions) {}
-
-        @Override
-        public void onRoadRestrictionsUpdated(@NonNull RoadRestrictions roadRestrictions) {
-            maxAllowedSpeed = roadRestrictions.getSpeedLimits().getCar().getMax();
-        }
-
-    };
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        VisionManager.create();
-        VisionManager.start(visionEventsListener);
-
-        VisionSafetyManager.create(VisionManager.INSTANCE, visionSafetyListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        VisionSafetyManager.destroy();
-
-        VisionManager.stop();
-        VisionManager.destroy();
-    }
-*/
-/*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        VisionManager.create();
-        VisionManager.start(myVisionEventsListenerInstance);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        VisionManager.stop();
-        VisionManager.destroy();
-    }
-*//*
-
-
-}
-*/
