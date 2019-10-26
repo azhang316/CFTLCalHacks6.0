@@ -1,0 +1,1 @@
+include ':app'//, ':mapbox-android-vision-ar-release', ':mapbox-android-vision-release', ':mapbox-android-vision-safety-release'
