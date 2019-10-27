@@ -18,9 +18,11 @@ import com.mapbox.vision.safety.VisionSafetyManager;
 import com.mapbox.vision.safety.core.VisionSafetyListener;
 import com.mapbox.vision.safety.core.models.CollisionObject;
 import com.mapbox.vision.safety.core.models.RoadRestrictions;
+import com.mapbox.vision.video.videosource.VideoSource;
 //import org.jetbrains.annotations.NotNull;
 import android.support.annotation.NonNull;
-
+//import com.example.calhacks2019;
+import android.app.Application;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,20 +89,24 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //VisionManager.init(this, "sk.eyJ1IjoiY29saW5hY2hlbiIsImEiOiJjazI3OWlxZTUwMG14M2NueW4wa2VtZzJtIn0.zeGUHYUwL5E2Kxaf32gahQ");
+        VisionManager.create();
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        VisionManager.create();
+        //VisionManager.create();
         //VisionManager.start();
         //VisionManager.start(visionEventsListener);
-        VisionManager.setVisionEventsListener(visionEventsListener);
+        //VisionManager.setVisionEventsListener(visionEventsListener);
         VisionManager.start();
 
         VisionSafetyManager.create(VisionManager.INSTANCE);
         VisionSafetyManager.setVisionSafetyListener(visionSafetyListener);
+
     }
 
     @Override
