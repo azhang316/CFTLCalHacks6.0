@@ -28,6 +28,7 @@ import com.smartdevicelink.proxy.RPCRequest;
 import com.smartdevicelink.proxy.RPCResponse;
 import com.smartdevicelink.proxy.TTSChunkFactory;
 import com.smartdevicelink.proxy.rpc.Alert;
+import com.smartdevicelink.proxy.rpc.GPSData;
 import com.smartdevicelink.proxy.rpc.GetVehicleDataResponse;
 import com.smartdevicelink.proxy.rpc.OnHMIStatus;
 import com.smartdevicelink.proxy.rpc.ScrollableMessage;
@@ -372,12 +373,19 @@ public class SdlService extends Service {
 	private void showTest_3(){
 		GetVehicleData vdRequest = new GetVehicleData();
 		vdRequest.setPrndl(true);
+		vdRequest.setSpeed(true);
+		vdRequest.setGps(true);
 		vdRequest.setOnRPCResponseListener(new OnRPCResponseListener() {
 
 			public void onResponse(int correlationId, RPCResponse response) {
 				if(response.getSuccess()){
 					PRNDL prndl = ((GetVehicleDataResponse) response).getPrndl();
+					Double speed1 = ((GetVehicleDataResponse) response).getSpeed();
+					GPSData gps1 = ((GetVehicleDataResponse) response).getGps();
 					Log.i("SdlService", "PRNDL status: " + prndl.toString());
+					Log.i("SdlService", "Speedy BOI: " + speed1.toString());
+					Log.i("SdlService", "GPS PUSSY BOI: " + gps1.getLatitudeDegrees());
+
 				}else{
 					Log.i("SdlService", "GetVehicleData was rejected.");
 				}
