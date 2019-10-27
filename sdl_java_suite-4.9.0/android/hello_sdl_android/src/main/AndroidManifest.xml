@@ -3,6 +3,11 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.sdl.hellosdlandroid">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Required to check if WiFi is enabled -->
@@ -17,7 +22,22 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+        android:supportsRtl="true"
         tools:ignore="DeepLinks">
+
+        <meta-data android:name="com.here.android.maps.appid" android:value="1hheH1T0IYuoM5Wq77D0"/>
+        <meta-data android:name="com.here.android.maps.apptoken" android:value="O1AEXF1atXKdajCBk6qOYA"/>
+        <meta-data android:name="com.here.android.maps.license.key" android:value="cR8Ead4gGNcscXFFvFfOZ3l7S6zOZcWrDNxJdZzvGrBHXvRabEC/FS+zD10I6xaBhOkFhWDdKMQj8I6yJY5gs0pzwjvV+DaSDnQJnQsCCylDCCybbUoWEPEHTG3agAPXJS1Koj4vl2gly7dWm+SByJxnVtwTVh/NoK4VSA1KjEnY4fGl0rDEnOYfx3YFQ/Jl7MGJ0b+KnNpaNecL7cOGJ9tNltZibVoxpqI/MeAdjezVz1nkwi30A03t5cgqE4IfMsaNMW0k4D9KOUldQ39xXh9QAfhdo9Kxl2qVJ6ti3u4cj0nPMCA/G5KLai4BXqrsGSFpiRhKAp3tIcASrZD0s9gT2CC+wBdpdIA+6cpnTBQEN0t4OYdcqzpPJR982REFx37M+6N3mR4tH7lDv83XTFxoqip5vANVdbuDcLMnlz5MuA+DbJMIC8C1GDOfSNtLryGRYmvXWQ9oicl1ZHZlgTYvepmusLL85eQGws+tPDWxL2x+WG/pGcSbVh96qhsHQNmh3Jg4t1cZuFPoLd1ZGdp8Pav3bs3X4qPYcVc/azdMyI+LlF64RZlSzhL/v3jusOiwoM7aVkYNqzAX7805aOhVC06MXggAw39bYnl5Z+/5QnMb6SNsiGSwUVsDwWUgabGR008dZ5Hh0ujfxMR9X5d5lhZGlx3zz5LdgsGpTgQ="/>
+
+        <meta-data android:name="INTENT_NAME" android:value="{intent1}"/>
+        <service android:name="com.here.android.mpa.service.MapService"
+            android:label="{label1}"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="{intent1}"/>
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >

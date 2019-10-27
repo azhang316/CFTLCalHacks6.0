@@ -31,9 +31,11 @@ import com.smartdevicelink.proxy.rpc.Alert;
 import com.smartdevicelink.proxy.rpc.GPSData;
 import com.smartdevicelink.proxy.rpc.GetVehicleDataResponse;
 import com.smartdevicelink.proxy.rpc.OnHMIStatus;
+import com.smartdevicelink.proxy.rpc.OnVehicleData;
 import com.smartdevicelink.proxy.rpc.ScrollableMessage;
 import com.smartdevicelink.proxy.rpc.SoftButton;
 import com.smartdevicelink.proxy.rpc.Speak;
+import com.smartdevicelink.proxy.rpc.SubscribeVehicleData;
 import com.smartdevicelink.proxy.rpc.enums.AppHMIType;
 import com.smartdevicelink.proxy.rpc.enums.FileType;
 import com.smartdevicelink.proxy.rpc.enums.HMILevel;
@@ -61,18 +63,21 @@ public class SdlService extends Service {
 
 	private static final String TAG 					= "SDL Service";
 
-	private static final String APP_NAME 				= "Hello Sdl";
+	private static final String APP_NAME 				= "Ford Focused";
 	private static final String APP_ID 					= "8678309";
 
 	private static final String ICON_FILENAME 			= "hello_sdl_icon.png";
 	private static final String SDL_IMAGE_FILENAME  	= "sdl_full_image.png";
 
-	private static final String WELCOME_SHOW 			= "Welcome to HelloSDL";
-	private static final String WELCOME_SPEAK 			= "Welcome to Hello S D L";
+	private static final String WELCOME_SHOW 			= "Ford Focused";
+	private static final String WELCOME_SPEAK 			= "";
 
-	private static final String TEST_COMMAND_NAME 		= "Never gonna give you up Never gonna let you down Never gonna run around and desert you Never gonna make you cry Never gonna say goodbye Never gonna tell a lie and hurt you";
+	private static final String TEST_COMMAND_NAME 		= "TEST";
 
 	private static final int FOREGROUND_SERVICE_ID = 111;
+
+	private static boolean unident_warned = false;
+	private static boolean warned = false;
 
 	// TCP/IP transport config
 	// The default port is 12345
@@ -176,16 +181,19 @@ public class SdlService extends Service {
 				@Override
 				public void onStart() {
 					// HMI Status Listener
+//					showTest_3();
 					sdlManager.addOnRPCNotificationListener(FunctionID.ON_HMI_STATUS, new OnRPCNotificationListener() {
+
 						@Override
 						public void onNotified(RPCNotification notification) {
 							OnHMIStatus status = (OnHMIStatus) notification;
 							if (status.getHmiLevel() == HMILevel.HMI_FULL && ((OnHMIStatus) notification).getFirstRun()) {
 								setVoiceCommands();
 								sendMenus();
-								performWelcomeSpeak();
-								performWelcomeShow();
+								//performWelcomeSpeak();
+								//performWelcomeShow();
 								preloadChoices();
+								showTest_3();
 							}
 						}
 					});
@@ -273,6 +281,7 @@ public class SdlService extends Service {
 			@Override
 			public void onTriggered(TriggerSource trigger) {
 				Log.i(TAG, "Sub cell 1 triggered. Source: "+ trigger.toString());
+				showAlert("Speed Limit: 45mph");
 				//showTest_3();
 			}
 		});
@@ -285,7 +294,7 @@ public class SdlService extends Service {
 		});
 
 		// sub menu parent cell
-        MenuCell mainCell3 = new MenuCell("Test Cell 3 (sub menu)", null, Arrays.asList(subCell1,subCell2));
+		MenuCell mainCell3 = new MenuCell("Test Cell 3 (sub menu)", null, Arrays.asList(subCell1,subCell2));
 
 		MenuCell mainCell4 = new MenuCell("Show Perform Interaction", null, null, new MenuSelectionListener() {
 			@Override
@@ -348,7 +357,7 @@ public class SdlService extends Service {
 
 	private void showTest_2(){
 		// Create Message To Display
-		String scrollableMessageText = "Lol this shit fucking sucks and i hope that it fails because i wanna go to sleep soon lmao im legit gonna die alone and fucking kill myself before age 30";
+		String scrollableMessageText = "Test";
 
 		// Create SoftButtons
 		SoftButton softButton1 = new SoftButton(SoftButtonType.SBT_TEXT, 0);
@@ -371,33 +380,75 @@ public class SdlService extends Service {
 	}
 
 	private void showTest_3(){
-		GetVehicleData vdRequest = new GetVehicleData();
-		vdRequest.setPrndl(true);
-		vdRequest.setSpeed(true);
-		vdRequest.setGps(true);
-		vdRequest.setOnRPCResponseListener(new OnRPCResponseListener() {
 
-			public void onResponse(int correlationId, RPCResponse response) {
-				if(response.getSuccess()){
-					PRNDL prndl = ((GetVehicleDataResponse) response).getPrndl();
-					Double speed1 = ((GetVehicleDataResponse) response).getSpeed();
-					GPSData gps1 = ((GetVehicleDataResponse) response).getGps();
-					Log.i("SdlService", "PRNDL status: " + prndl.toString());
-					Log.i("SdlService", "Speedy BOI: " + speed1.toString());
-					Log.i("SdlService", "GPS PUSSY BOI: " + gps1.getLatitudeDegrees());
-
-				}else{
-					Log.i("SdlService", "GetVehicleData was rejected.");
+		sdlManager.addOnRPCNotificationListener(FunctionID.ON_VEHICLE_DATA, new OnRPCNotificationListener() {
+			@Override
+			public void onNotified(RPCNotification notification) {
+				OnVehicleData onVehicleDataNotification = (OnVehicleData) notification;
+//				if (onVehicleDataNotification.getPrndl() != null) {
+//					Log.i("SdlService", "PRNDL status was updated to: " + onVehicleDataNotification.getPrndl());
+//				}
+				if (onVehicleDataNotification.getSpeed() != null) {
+					Log.i("SdlService", "Speed in KM/H: " + onVehicleDataNotification.getSpeed());
+					int currentSpeedLimit = MainActivity.getSpeedLimit();
+					if (currentSpeedLimit == 0 ){
+						if (unident_warned == false) {
+							showAlert("Be careful! Speed limit has not been identified.");
+							unident_warned = true;
+						}
+					} else if (onVehicleDataNotification.getSpeed() >= currentSpeedLimit + 5 && currentSpeedLimit != 0) {
+						showAlert("Slow Down! You're going too fast.");
+					}
 				}
 			}
 		});
-		sdlManager.sendRPC(vdRequest);
+
+		SubscribeVehicleData subscribeRequest = new SubscribeVehicleData();
+		//subscribeRequest.setPrndl(true);
+		subscribeRequest.setSpeed(true);
+		subscribeRequest.setOnRPCResponseListener(new OnRPCResponseListener() {
+			@Override
+			public void onResponse(int correlationId, RPCResponse response) {
+				if(response.getSuccess()){
+					Log.i("SdlService", "Successfully subscribed to vehicle data.");
+				}else{
+					Log.i("SdlService", "Request to subscribe to vehicle data was rejected.");
+				}
+			}
+		});
+		sdlManager.sendRPC(subscribeRequest);
+
+//		GetVehicleData vdRequest = new GetVehicleData();
+//		vdRequest.setPrndl(true);
+//		vdRequest.setSpeed(true);
+//		vdRequest.setGps(true);
+//		vdRequest.setOnRPCResponseListener(new OnRPCResponseListener() {
+//
+//			public void onResponse(int correlationId, RPCResponse response) {
+//				if(response.getSuccess()){
+//					Double speed1 = ((GetVehicleDataResponse) response).getSpeed();
+//					if (speed1 == 0.0){
+//						showAlert("You are going too fucking slow");
+//					}
+//					GPSData gps1 = ((GetVehicleDataResponse) response).getGps();
+//					Log.i("SdlService", "Speedy GIRL: " + speed1.toString());
+//					Log.i("SdlService", "GPS PUSSY WOMAN: " + gps1.getLatitudeDegrees());
+//
+//				}else{
+//					Log.i("SdlService", "GetVehicleData was rejected.");
+//				}
+//			}
+//		});
+//		sdlManager.sendRPC(vdRequest);
+
 
 	}
 
 	private void showAlert(String text){
 		Alert alert = new Alert();
-		alert.setAlertText1(text);
+		alert.setAlertText1("Speed Warning!");
+		alert.setAlertText2(text);
+		alert.setPlayTone(true);
 		alert.setDuration(5000);
 		sdlManager.sendRPC(alert);
 	}
